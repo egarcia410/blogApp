@@ -1,6 +1,14 @@
 <h1>HOME PAGE</h1>
 {% if user %}
-Welcome {{ user }}!
+<h1>Welcome, {{ user }}!</h1>
+<form action="/logout" method="post">
+    <button type="submit">Log out</button>
+</form>
+{% else %}
+<button><a href="/signup">Sign Up</a></button>
+<button><a href="/login">Log In</a></button>
+<button><a href="/post">Create Post</a></button>
+
 {% endif %}
 
 {% for message in messages %}
@@ -10,3 +18,5 @@ Welcome {{ user }}!
 {% for post in posts %}
 {{ post.post }}
 {% endfor %}
+
+

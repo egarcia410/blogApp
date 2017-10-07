@@ -25,9 +25,12 @@ class Users (BaseModel):
     def __str__ (self):
         return self.username
 
-class Comments (BaseModel):
+class Posts (BaseModel):
     author = peewee.ForeignKeyField(Users, null=False)
-    comment = peewee.TextField(null=False)
+    title = peewee.CharField(max_length=60, null=False)
+    category = peewee.CharField(max_length=60, null=False)
+    post = peewee.TextField(null=False)
+    likes = peewee.IntegerField() # Defaults at 0, not NULL
     created = peewee.DateTimeField(
                 default=datetime.datetime.utcnow)
 
@@ -37,13 +40,10 @@ class Comments (BaseModel):
     def __str__(self):
         return self.id
 
-class Posts (BaseModel):
+class Comments (BaseModel):
     author = peewee.ForeignKeyField(Users, null=False)
-    comment = peewee.ForeignKeyField(Comments, null=False)
-    title = peewee.CharField(max_length=60, null=False)
-    category = peewee.CharField(max_length=60, null=False)
-    post = peewee.TextField(null=False)
-    likes = peewee.IntegerField() # Defaults at 0, not NULL
+    post = peewee.ForeignKeyField(Posts, null=False)
+    comment = peewee.TextField(null=False)
     created = peewee.DateTimeField(
                 default=datetime.datetime.utcnow)
 

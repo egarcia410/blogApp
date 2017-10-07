@@ -24,9 +24,11 @@ class TemplateHandler(tornado.web.RequestHandler):
     def render_template (self, tpl, context):
         template = ENV.get_template(tpl)
         self.write(template.render(**context))
-    # checks is user exists and returns user
+
+    # checks if user exists
     def user_exists(self, email):
-        return Users.get(Users.email == email)
+        return bool(Users.select().where(Users.email == email))
+
     # authentication to determine current user available in every request handler
     def get_current_user(self):
         user_id = self.get_secure_cookie("blog_user")
@@ -53,9 +55,10 @@ class SignupHandler(TemplateHandler):
         password = self.get_body_argument('password')
         passwordConfirm = self.get_body_argument('passwordConfirm')
         messages = []
+        user = self.user_exists(email)
         # Validations
         # if user exisits or email invalid
-        if self.user_exists(email) or not validate_email(email):
+        if user or not validate_email(email):
             messages.append("Invalid username/password")
         # checks if username is not an empty string
         if username == "":
@@ -71,12 +74,12 @@ class SignupHandler(TemplateHandler):
             return self.render_template("signup.html", {'messages': tuple(messages)})
         # create hashed & salted user password
         # tornado.escape.utf8 converts string to byte string
+        # https://github.com/pyca/bcrypt#password-hashing
         hashed_password = bcrypt.hashpw(tornado.escape.utf8(password), bcrypt.gensalt())
         # create user
         user = Users.create(email=email, username=username, hashed_password=hashed_password)
         self.set_secure_cookie("blog_user", str(user.id))
-        messages.append("Sign Up Successful!")
-        return self.render_template("home.html", {'messages': tuple(messages)})
+        return self.redirect("/")
 
 class LoginHandler(TemplateHandler):
     """Login in user"""
@@ -87,24 +90,42 @@ class LoginHandler(TemplateHandler):
         email = self.get_body_argument('email')
         password = self.get_body_argument('password')
         user = self.user_exists(email)
+        messages = []
+        # if user does not exist
+        if not user:
+            messages.append("Invalid Email/Password")
+            return self.render_template("login.html", {'messages': tuple(messages)})
+        user = Users.get(Users.email == email)
+        # https://github.com/pyca/bcrypt#password-hashing
         matched = bcrypt.checkpw(tornado.escape.utf8(password), 
                             tornado.escape.utf8(user.hashed_password))
-        messages = []
-        # if user does not exist or incorrect password
-        if not user or not matched:
+        # if incorrect password
+        if not matched:
             messages.append("Invalid Email/Password")
-        if messages:
             return self.render_template("login.html", {'messages': tuple(messages)})
+        # Log in user
         self.set_secure_cookie("blog_user", str(user.id))
-        messages.append("Log In Successful!")
-        return self.render_template("home.html", {'messages': tuple(messages)})
+        return self.redirect("/")
+
+class LogoutHandler(TemplateHandler):
+    def post(self):
+        self.clear_cookie("blog_user")
+        messages = "Logged Out Succesfully!"
+        return self.redirect("/")
+
+class PostHandler(TemplateHandler):
+    @tornado.web.authenticated
+    def get(self):
+        return self.render_template("post.html", {})
+      
 
 def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
         (r"/signup", SignupHandler),
         (r"/login", LoginHandler),
-        # (r"/logout", LogoutHandler),
+        (r"/logout", LogoutHandler),
+        (r"/post", PostHandler),
         (r"/static/(.*)", 
         tornado.web.StaticFileHandler, {'path': 'static'}),
     ], autoreload=True,
@@ -116,4 +137,4 @@ if __name__ == "__main__":
     app = make_app()
     app.listen(PORT, print('Creating magic on port {}'.format(PORT)))
     tornado.ioloop.IOLoop.current().start()
-    
+
