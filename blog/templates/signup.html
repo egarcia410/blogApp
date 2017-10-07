@@ -1,0 +1,16 @@
+<h1>SIGN UP</h1>
+<form action="/signup" method="post">
+    <label for="email"Email>Email</label>
+    <input type="text" name="email" id="email">
+    <label for="username">Username</label>
+    <input type="text" name="username" id="username">
+    <label for="password">Password</label>
+    <input type="text" name="password" id="password">
+    <label for="passwordConfirm">Confirm Password</label>
+    <input type="text" name="passwordConfirm" id="passwordConfirm">
+    <button type="submit">Submit</button>
+</form>
+
+{% for message in messages %}
+    {{ message }}
+{% endfor %}
