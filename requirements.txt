@@ -3,5 +3,4 @@ psycopg2
 tornado
 jinja2
 bcrypt
-peewee-validates
 validate-email-address

@@ -23,7 +23,7 @@ class Users (BaseModel):
     likes = peewee.IntegerField(default=0)
 
     def __str__ (self):
-        return self.name
+        return self.username
 
 class Comments (BaseModel):
     author = peewee.ForeignKeyField(Users, null=False)

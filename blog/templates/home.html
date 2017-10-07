@@ -1,4 +1,12 @@
 <h1>HOME PAGE</h1>
+{% if user %}
+Welcome {{ user }}!
+{% endif %}
+
 {% for message in messages %}
 {{ message }}
+{% endfor %}
+
+{% for post in posts %}
+{{ post.post }}
 {% endfor %}
