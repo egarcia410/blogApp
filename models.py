@@ -3,7 +3,6 @@ import os
 import peewee
 import bcrypt
 from playhouse.db_url import connect
-from playhouse.fields import PasswordField
 import markdown2
 
 DB = connect(
@@ -17,17 +16,17 @@ class BaseModel (peewee.Model):
     class Meta:
         database = DB
 
-class Author (BaseModel):
+class Users (BaseModel):
     email = peewee.CharField(null=False, unique=True)
     username = peewee.CharField(null=False, unique=True)
-    password = PasswordField(null=False) # Needs constraint > 7 
+    hashed_password = peewee.CharField(null=False)
     likes = peewee.IntegerField(default=0)
 
     def __str__ (self):
         return self.name
 
-class Comment (BaseModel):
-    author = peewee.ForeignKeyField(Author, null=False)
+class Comments (BaseModel):
+    author = peewee.ForeignKeyField(Users, null=False)
     comment = peewee.TextField(null=False)
     created = peewee.DateTimeField(
                 default=datetime.datetime.utcnow)
@@ -38,9 +37,9 @@ class Comment (BaseModel):
     def __str__(self):
         return self.id
 
-class Post (BaseModel):
-    author = peewee.ForeignKeyField(Author, null=False)
-    comment = peewee.ForeignKeyField(Comment, null=False)
+class Posts (BaseModel):
+    author = peewee.ForeignKeyField(Users, null=False)
+    comment = peewee.ForeignKeyField(Comments, null=False)
     title = peewee.CharField(max_length=60, null=False)
     category = peewee.CharField(max_length=60, null=False)
     post = peewee.TextField(null=False)
