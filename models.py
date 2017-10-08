@@ -22,25 +22,20 @@ class Users (BaseModel):
     hashed_password = peewee.CharField(null=False)
     likes = peewee.IntegerField(default=0)
 
-    def __str__ (self):
-        return self.username
-
 class Posts (BaseModel):
-    author = peewee.ForeignKeyField(Users, null=False)
+    user = peewee.ForeignKeyField(Users, null=False)
     title = peewee.CharField(max_length=60, null=False)
     category = peewee.CharField(max_length=60, null=False)
     post = peewee.TextField(null=False)
-    likes = peewee.IntegerField() # Defaults at 0, not NULL
+    likes = peewee.IntegerField(default=0)
     created = peewee.DateTimeField(
                 default=datetime.datetime.utcnow)
 
     def html(self):
         return markdown2.markdown(self.body)
 
-    def __str__(self):
-        return self.id
-
 class Comments (BaseModel):
+    # change to user instead of author
     author = peewee.ForeignKeyField(Users, null=False)
     post = peewee.ForeignKeyField(Posts, null=False)
     comment = peewee.TextField(null=False)
@@ -49,7 +44,3 @@ class Comments (BaseModel):
 
     def html(self):
         return markdown2.markdown(self.body)
-
-    def __str__(self):
-        return self.id
-

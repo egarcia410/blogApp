@@ -40,8 +40,8 @@ class MainHandler(TemplateHandler):
         posts = Posts.select().order_by(
             Posts.created.desc())
         if self.current_user:
-            user = self.current_user
-            return self.render_template("home.html", {'posts': posts, 'user': user})
+            loggedInUser = self.current_user
+            return self.render_template("home.html", {'posts': posts, 'loggedInUser': loggedInUser})
         self.render_template("home.html", {'posts': posts})
 
 class SignupHandler(TemplateHandler):
@@ -57,9 +57,12 @@ class SignupHandler(TemplateHandler):
         messages = []
         user = self.user_exists(email)
         # Validations
-        # if user exisits or email invalid
-        if user or not validate_email(email):
-            messages.append("Invalid username/password")
+        # if user exists
+        if user:
+            messages.append("Email already exists")
+        # if email invalid format
+        if not validate_email(email):
+            messages.append("Invalid email address")
         # checks if username is not an empty string
         if username == "":
             messages.append("Input username")
@@ -113,11 +116,44 @@ class LogoutHandler(TemplateHandler):
         messages = "Logged Out Succesfully!"
         return self.redirect("/")
 
-class PostHandler(TemplateHandler):
+class CreatePostHandler(TemplateHandler):
     @tornado.web.authenticated
     def get(self):
-        return self.render_template("post.html", {})
-      
+        return self.render_template("create_post.html", {})
+
+    @tornado.web.authenticated
+    def post(self):
+        title = self.get_body_argument('title')  
+        category = self.get_body_argument('category')  
+        post = self.get_body_argument('post')
+        messages = []
+        if title == "" or category == "" or post == "":
+            messages.append("Please fill out all fields")
+            return self.render_template("create_post.html", {'messages': tuple(messages)})
+        user = self.current_user
+        Posts.create(user_id=user.id, title=title, category=category, post=post)
+        messages.append("Created Post!")
+        return self.render_template("create_post.html", {'messages': tuple(messages)})
+
+class PostHandler(TemplateHandler):
+    def get(self, slug):
+        post = Posts.select().where(Posts.id == slug)
+        if post:
+            post = Posts.select().where(Posts.id == slug).get()
+            comments = Comments.select().where(Comments.post_id == slug).order_by(Comments.created.desc())
+            loggedInUser = self.get_current_user
+            return self.render_template("post.html", {'post': post, 'comments': comments, 'loggedInUser': loggedInUser})
+        return self.redirect("/")
+
+    @tornado.web.authenticated
+    def post(self, slug):
+        comment = self.get_body_argument('comment')
+        if comment == "":
+            return self.redirect('/post/{}'.format(slug))
+        user = self.current_user
+        # change to user, not author later
+        Comments.create(author_id=user.id, post_id=slug, comment=comment)
+        return self.redirect("/post/{}".format(slug))
 
 def make_app():
     return tornado.web.Application([
@@ -125,7 +161,8 @@ def make_app():
         (r"/signup", SignupHandler),
         (r"/login", LoginHandler),
         (r"/logout", LogoutHandler),
-        (r"/post", PostHandler),
+        (r"/post", CreatePostHandler),
+        (r"/post/(.*)", PostHandler),
         (r"/static/(.*)", 
         tornado.web.StaticFileHandler, {'path': 'static'}),
     ], autoreload=True,

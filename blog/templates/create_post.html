@@ -1,0 +1,17 @@
+<H1>CREATE POST</H1>
+
+<form action="/post" method="post">
+    <label for="title">Title</label>
+    <input type="text" name="title" id="title">
+    <label for="category">Category</label>    
+    <input type="text" name="category" id="category">
+    <label for="post">Post</label>    
+    <input type="text" name="post" id="post">
+    <button type="submit">Submit</button>
+</form>
+
+{% for message in messages %}
+{{ message }}
+{% endfor %}
+
+<button><a href="/">Return Home</a></button>

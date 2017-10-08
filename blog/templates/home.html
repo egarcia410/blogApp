@@ -1,13 +1,13 @@
 <h1>HOME PAGE</h1>
-{% if user %}
-<h1>Welcome, {{ user }}!</h1>
+{% if loggedInUser %}
+<h1>Welcome, {{ loggedInUser.username }}!</h1>
 <form action="/logout" method="post">
-    <button type="submit">Log out</button>
+    <button type="submit">Log Out</button>
 </form>
+<button><a href="/post">Create Post</a></button>
 {% else %}
 <button><a href="/signup">Sign Up</a></button>
 <button><a href="/login">Log In</a></button>
-<button><a href="/post">Create Post</a></button>
 
 {% endif %}
 
@@ -15,8 +15,14 @@
 {{ message }}
 {% endfor %}
 
+{% if posts %}
 {% for post in posts %}
-{{ post.post }}
+<ul>
+    <li><a href="/post/{{post.id}}">{{ post.post }}</a></li>
+</ul>
 {% endfor %}
+{% else %}
+Be the first to make a post!
+{% endif %}
 
 
