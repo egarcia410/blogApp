@@ -6,7 +6,7 @@ import tornado.log
 import tornado.escape
 
 from dotenv import load_dotenv
-from models import Posts, Users, Comments
+from models import Posts, Users, Comments, Likes
 from validate_email_address import validate_email
 from jinja2 import \
   Environment, PackageLoader, select_autoescape
@@ -141,9 +141,16 @@ class PostHandler(TemplateHandler):
         if post:
             post = Posts.select().where(Posts.id == slug).get()
             comments = Comments.select().where(Comments.post_id == slug).order_by(Comments.created.desc())
-            loggedInUser = self.get_current_user
-            return self.render_template("post.html", {'post': post, 'comments': comments, 'loggedInUser': loggedInUser})
+            # number of likes
+            likes = Likes.select().where(Likes.post_id == slug).count() 
+            loggedInUser = self.current_user
+            return self.render_template("post.html", {'post': post, 'comments': comments, 'likes': likes, 'loggedInUser': loggedInUser})
         return self.redirect("/")
+
+class CommentHandler(TemplateHandler):
+    @tornado.web.authenticated
+    def get(self):
+        pass
 
     @tornado.web.authenticated
     def post(self, slug):
@@ -151,9 +158,47 @@ class PostHandler(TemplateHandler):
         if comment == "":
             return self.redirect('/post/{}'.format(slug))
         user = self.current_user
-        # change to user, not author later
-        Comments.create(author_id=user.id, post_id=slug, comment=comment)
+        Comments.create(user_id=user.id, post_id=slug, comment=comment)
         return self.redirect("/post/{}".format(slug))
+
+class LikeHandler(TemplateHandler):
+    @tornado.web.authenticated
+    def get(self):
+        pass
+
+    @tornado.web.authenticated
+    def post(self, slug):
+        user = self.current_user
+        likes = Likes.select().where(Likes.post_id == slug)
+        if likes:
+            # Do not allow more than one like for one post
+            likes = Likes.select().where(Likes.post_id == slug).get()
+            if likes.user_id == user.id:
+                return self.redirect("/post/{}".format(slug))
+        # If you are creator of post, can not like it
+        post = Posts.select().where(Posts.id == slug).get()
+        if post.user_id == user.id:
+            return self.redirect("/post/{}".format(slug))
+        # Create like 
+        Likes.create(user_id=user.id, post_id=slug)
+        return self.redirect("/post/{}".format(slug))
+
+class AuthorHandler(TemplateHandler):
+    def get(self, slug):
+        user = Users.select().where(Users.id == slug)
+        if user:
+            # Retrieve users post, comment, and like history 
+            posts = Posts.select().where(Posts.user_id == slug)
+            if posts:
+                posts = (Posts.select().where(Posts.user_id == slug).order_by(Posts.created.desc()))
+            comments = Comments.select().where(Comments.user_id == slug)
+            if comments:
+                comments = (Comments.select().where(Comments.user_id == slug).order_by(Comments.created.desc()))
+            likes = Likes.select().where(Likes.user_id == slug)
+            if likes:
+                likes = (Likes.select().where(Likes.user_id == slug).order_by(Likes.created.desc()))
+            return self.render_template("author.html", {'posts': posts, 'comments': comments, 'likes': likes} )
+        return self.redirect("/")
 
 def make_app():
     return tornado.web.Application([
@@ -163,6 +208,9 @@ def make_app():
         (r"/logout", LogoutHandler),
         (r"/post", CreatePostHandler),
         (r"/post/(.*)", PostHandler),
+        (r"/comment/(.*)", CommentHandler),
+        (r"/like/(.*)",  LikeHandler),
+        (r"/author/(.*)", AuthorHandler),
         (r"/static/(.*)", 
         tornado.web.StaticFileHandler, {'path': 'static'}),
     ], autoreload=True,

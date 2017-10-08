@@ -8,7 +8,16 @@
 {{ post.likes }}
 
 {% if loggedInUser %}
-<form action="/post/{{post.id}}" method="post">
+<div>
+    {{ likes }}
+    <form action="/like/{{post.id}}" method="post">
+        <button type="submit">Like</button>
+    </form>
+</div>
+
+<hr>
+
+<form action="/comment/{{post.id}}" method="post">
     <input type="text" name="comment" id="comment">
     <button type="submit">Comment</button>
     {% for message in messages %}
@@ -17,12 +26,9 @@
 </form>
 {% endif %}
 
-
-
-
 {% for comment in comments %}
     <ul>
-        <li>{{ comment.author.username }}</li>
-        <li>{{ comment.comment }}</li>
+        <li><a href="/author/{{comment.user.id}}">{{ comment.user.username }}</a></li>
+        <li>{{ comment.comment }}</li>        
     </ul>
 {% endfor %}

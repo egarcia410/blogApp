@@ -19,10 +19,4 @@ http://identicon.net/
 
 Future additons:
 
-1. Add authors page
-
-2. Add likes to posts
-
-3. Owner of post can't like own post
-
-4. Can only like a post once
+1. only update/delete if your own post

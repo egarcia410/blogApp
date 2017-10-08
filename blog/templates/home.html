@@ -19,6 +19,14 @@
 {% for post in posts %}
 <ul>
     <li><a href="/post/{{post.id}}">{{ post.post }}</a></li>
+    {% if post.user_id == loggedInUser.id %}
+    <form action="/edit/{{post.id}}">
+        <button type="submit">Edit</button>
+    </form>
+    <form action="/delete/{{post.id}}">
+        <button type="submit">Delete</button>
+    </form>
+    {% endif %}
 </ul>
 {% endfor %}
 {% else %}
