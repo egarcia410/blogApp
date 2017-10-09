@@ -18,7 +18,7 @@ class BaseModel (peewee.Model):
 
 class Users (BaseModel):
     email = peewee.CharField(null=False, unique=True)
-    username = peewee.CharField(null=False, unique=True)
+    username = peewee.CharField(null=False, unique=False)
     hashed_password = peewee.CharField(null=False)
 
 class Posts (BaseModel):

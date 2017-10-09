@@ -1,36 +1,66 @@
-<h1>HOME PAGE</h1>
-{% if loggedInUser %}
-<h1>Welcome, {{ loggedInUser.username }}!</h1>
-<form action="/logout" method="post">
-    <button type="submit">Log Out</button>
-</form>
-<button><a href="/post">Create Post</a></button>
-{% else %}
-<button><a href="/signup">Sign Up</a></button>
-<button><a href="/login">Log In</a></button>
+{% extends 'base.html' %}
 
-{% endif %}
+{% block title %}Home{% endblock %}
 
-{% for message in messages %}
-{{ message }}
-{% endfor %}
-
-{% if posts %}
-{% for post in posts %}
-<ul>
-    <li><a href="/post/{{post.id}}">{{ post.post }}</a></li>
-    {% if post.user_id == loggedInUser.id %}
-    <form action="/edit/{{post.id}}">
-        <button type="submit">Edit</button>
-    </form>
-    <form action="/delete/{{post.id}}">
-        <button type="submit">Delete</button>
-    </form>
+{% block navbar %}
+    {% if loggedInUser %}
+        <div class="navbar-menu">
+            <h1>Welcome, <strong>{{ loggedInUser.username }}</strong>!</h1>
+        </div>
+        <div class="navbar-menu is-active navbar-end">
+            <div class="navbar-item">
+                <button class="button is-active is-primary"><a class="navbarLink" href="/post">Create Post</a></button>
+            </div>
+            <div class="navbar-item ">
+                <form action="/logout" method="post">
+                    <button class="button is-active is-primary" type="submit">Log Out</button>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <div class="navbar-menu is-active navbar-end">
+            <div class="navbar-item">
+                <button class="button is-active is-primary"><a class="navbarLink" href="/signup">Sign Up</a></button>
+            </div>
+            <div class="navbar-item">
+                <button class="button is-active is-primary"><a class="navbarLink" href="/login">Log In</a></button>
+            </div>
+        </div>
     {% endif %}
-</ul>
-{% endfor %}
-{% else %}
-Be the first to make a post!
-{% endif %}
+{% endblock %}
+
+{% block content %}
+<di class="container">
+    <div class="messages">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+    <div class="posts">
+        {% if posts %}
+            {% for post in posts %}
+            <ul>
+                <li><a class="postTitle" href="/post/{{post.id}}">{{ post.post }}</a></li>
+                <p>By <a class="postUsername" href="/author/{{ post.user.id }}">{{ post.user.username }}</a></p>
+                {% if loggedInUser %}
+                    {% if post.user_id == loggedInUser.id %}
+                    <div class="editDeleteBox">
+                        <form action="/post-edit/{{post.id}}">
+                            <button class="editDelete button is-info" type="submit">Edit</button>
+                        </form>
+                        <form action="/post-delete/{{post.id}}" method="post">
+                            <button class="editDelete button is-danger" type="submit">Delete</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                {% endif %}
+            </ul>
+            {% endfor %}
+        {% else %}
+            <p>Be the first to make a post!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
 
 

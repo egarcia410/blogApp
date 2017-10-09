@@ -1,17 +1,20 @@
 <h1>AUTHOR PAGE</h1>
 
+<h2>Posts Made {{ numPosts }}</h2>
 {% for post in posts %}
     <li>{{ post.title }}</li>
 {% endfor %}
 
 <hr>
 
+<h2>Comments Made {{ numComments }}</h2>
 {% for comment in comments %}
     <li>{{ comment.comment }}</li>
 {% endfor %}
 
 <hr>
 
+<h2>Posts Liked {{ numLikes }}</h2>
 {% for like in likes %}
 <li>{{ like.post.title }}</li>
 {% endfor %}

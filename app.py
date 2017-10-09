@@ -42,12 +42,15 @@ class MainHandler(TemplateHandler):
         if self.current_user:
             loggedInUser = self.current_user
             return self.render_template("home.html", {'posts': posts, 'loggedInUser': loggedInUser})
-        self.render_template("home.html", {'posts': posts})
+        return self.render_template("home.html", {'posts': posts})
 
 class SignupHandler(TemplateHandler):
     """Sign up page to create user"""
     def get (self):
-        self.render_template("signup.html", {})
+        loggedInUser = self.current_user
+        if not loggedInUser:
+            return self.render_template("signup.html", {'loggedInUser': loggedInUser})
+        return self.redirect("/")
 
     def post (self):
         email = self.get_body_argument('email')
@@ -128,11 +131,11 @@ class CreatePostHandler(TemplateHandler):
         post = self.get_body_argument('post')
         messages = []
         if title == "" or category == "" or post == "":
-            messages.append("Please fill out all fields")
+            messages.append("PLEASE FILL OUT ALL FIELDS")
             return self.render_template("create_post.html", {'messages': tuple(messages)})
         user = self.current_user
         Posts.create(user_id=user.id, title=title, category=category, post=post)
-        messages.append("Created Post!")
+        messages.append("POST CREATED!")
         return self.render_template("create_post.html", {'messages': tuple(messages)})
 
 class PostHandler(TemplateHandler):
@@ -149,8 +152,8 @@ class PostHandler(TemplateHandler):
 
 class CommentHandler(TemplateHandler):
     @tornado.web.authenticated
-    def get(self):
-        pass
+    def get(self, slug):
+        return self.redirect("/post/{}".format(slug))
 
     @tornado.web.authenticated
     def post(self, slug):
@@ -163,8 +166,8 @@ class CommentHandler(TemplateHandler):
 
 class LikeHandler(TemplateHandler):
     @tornado.web.authenticated
-    def get(self):
-        pass
+    def get(self, slug):
+        return self.redirect("/post/{}".format(slug))
 
     @tornado.web.authenticated
     def post(self, slug):
@@ -197,8 +200,63 @@ class AuthorHandler(TemplateHandler):
             likes = Likes.select().where(Likes.user_id == slug)
             if likes:
                 likes = (Likes.select().where(Likes.user_id == slug).order_by(Likes.created.desc()))
-            return self.render_template("author.html", {'posts': posts, 'comments': comments, 'likes': likes} )
+            numPosts = Posts.select().where(Posts.user_id == slug).count()
+            numComments = Comments.select().where(Comments.user_id == slug).count()
+            numLikes = Likes.select().where(Likes.user_id == slug).count()
+            return self.render_template("author.html", {'posts': posts, 'numPosts': numPosts, 
+                                                        'numComments': numComments, 'numLikes': numLikes, 
+                                                        'comments': comments, 'likes': likes} )
         return self.redirect("/")
+
+class EditPostHandler(TemplateHandler):
+    @tornado.web.authenticated
+    def get(self, slug):
+        post = Posts.select().where(Posts.id == slug)
+        if post:
+            post = Posts.select().where(Posts.id == slug).get()
+            user = self.current_user
+            # Only allow the creator of the post access to edit 
+            if post.user_id == user.id:
+                return self.render_template("edit_post.html", {'post': post})
+        return self.redirect("/")
+
+    @tornado.web.authenticated
+    def post(self, slug):
+        post = Posts.select().where(Posts.id == slug)
+        if post:
+            post = Posts.select().where(Posts.id == slug).get()
+            loggedInUser = self.current_user
+            print(post.id, 'post id')
+            # Only allow the creator of the post access to edit 
+            if post.user_id == loggedInUser.id:
+                title = self.get_body_argument('title')
+                category = self.get_body_argument('category')
+                post = self.get_body_argument('post')
+                # Edit Post 
+
+                Posts.update(title=title, category=category, post=post).where(Posts.id == slug).execute()
+                return self.redirect("/post/" + slug)
+        return self.redirect("/")
+
+class DeletePostHandler(TemplateHandler):
+    @tornado.web.authenticated
+    def get(self, slug):
+        return self.redirect("/")
+
+    @tornado.web.authenticated
+    def post(self, slug):
+        post = Posts.select().where(Posts.id == slug)
+        print('FIRST')
+        if post:
+            post = Posts.select().where(Posts.id == slug).get()
+            user = self.current_user
+            print('HELLO')
+            # Only allow the creator of the post access to edit 
+            if post.user_id == user.id:
+                print(post, 'POST')
+                post.delete_instance(recursive=True, delete_nullable=True)
+        return self.redirect("/")          
+    
 
 def make_app():
     return tornado.web.Application([
@@ -211,6 +269,8 @@ def make_app():
         (r"/comment/(.*)", CommentHandler),
         (r"/like/(.*)",  LikeHandler),
         (r"/author/(.*)", AuthorHandler),
+        (r"/post-edit/(.*)", EditPostHandler),
+        (r"/post-delete/(.*)", DeletePostHandler),
         (r"/static/(.*)", 
         tornado.web.StaticFileHandler, {'path': 'static'}),
     ], autoreload=True,

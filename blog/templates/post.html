@@ -1,3 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Post Page{% endblock %}
+
+{% block navbar %}
+{% if loggedInUser %}
+    <div class="navbar-menu is-active navbar-end">
+        <div class="navbar-item ">
+            <form action="/logout" method="post">
+                <button class="button is-active is-primary" type="submit">Log Out</button>
+            </form>
+        </div>
+    </div>
+{% else %}
+    <div class="navbar-menu is-active navbar-end">
+        <div class="navbar-item">
+            <button class="button is-active is-primary"><a class="navbarLink" href="/signup">Sign Up</a></button>
+        </div>
+        <div class="navbar-item">
+            <button class="button is-active is-primary"><a class="navbarLink" href="/login">Log In</a></button>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="content login">
+        <div class="postInfo">
+            <p class="title is-1">{{ post.title}}</p>
+            <p class="button is-info subtitle is-6">{{ post.category }}</p>
+            <p class="notification">{{ post.post }}</p>
+            <div>
+                <div>
+                    <p>Author: {{ post.user.username }}</p>
+                </div>
+                <div>
+                    <p>Created: {{ post.created.strftime('%b %d, %Y %H:%M') }}</p>
+                </div>
+                <div>
+                    {% if likes %}
+                        <p>Likes: {{ post.likes }}</p>
+                    {% else %}
+                        <p>Likes: 0</p>                    
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <hr>
+        {% if loggedInUser %}
+        <div>
+            <p class="subtitle is-4">{{ loggedInUser.username }}</p>
+        </div>
+        <form action="/comment/{{post.id}}" method="post">
+            <div class="field">
+                <p class="control">
+                    <input name="comment" class="input" type="text" placeholder="Comment">
+                </p>
+            </div>
+            <div class="field">
+                <p class="control">
+                <button class="button is-success">Comment</button>
+                </p>
+            </div>
+        </form>
+        <hr>
+        {% endif %}
+        {% if comments %}
+            <p class="commentTitle title is-2">Comments</p>
+            {% for comment in comments %}
+            <div class="box">
+                <article class="media">
+                    <div class="media-content">
+                        <div class="content">
+                            <p>
+                                <strong><a href="/author/{{comment.user.id}}">{{ comment.user.username }}</a></strong> <small>{{ comment.created.strftime('%b %d, %Y %H:%M') }}</small>
+                                <br>
+                                {{ comment.comment }}
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+
+
+{% endblock %}
+
+
 <h1>SPECIFIC POST PAGE</h1>
 
 {{ post.user.username}}
@@ -26,9 +119,4 @@
 </form>
 {% endif %}
 
-{% for comment in comments %}
-    <ul>
-        <li><a href="/author/{{comment.user.id}}">{{ comment.user.username }}</a></li>
-        <li>{{ comment.comment }}</li>        
-    </ul>
-{% endfor %}
+

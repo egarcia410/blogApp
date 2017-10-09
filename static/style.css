@@ -1,0 +1,62 @@
+/* Navbar */
+.navbar-menu {
+    text-align: center;
+    align-items: center;
+}
+
+.messages {
+    color: #8e44ad;
+    text-align: center;
+    margin: 10px;
+    font-size: 25px;
+    list-style-type: none;
+    margin-left: 15%;
+    margin-right: 15%;
+}
+
+.navbarLink {
+    color: white;
+}
+
+/* Home Page */
+.postTitle {
+    color: black;
+    font-size: 35px;
+    text-decoration: underline;
+}
+
+.postUsername {
+    color: #3498db;
+}
+
+.posts {
+    text-align: center;
+}
+
+.editDeleteBox {
+    display: inline-flex;
+}
+
+.editDelete {
+    margin: 5px;
+}
+
+/* Log In */
+.titlePage {
+    text-align: center;
+}
+
+.login {
+    margin-left: 20%;
+    margin-right: 20%;
+}
+
+/* Post Page */
+.box {
+    margin-top: 10px;
+}
+
+.commentTitle {
+    margin-top: 20px;
+    margin-bottom: 0 !important;
+}

@@ -1,17 +1,51 @@
-<H1>CREATE POST</H1>
+{% extends 'base.html' %}
 
-<form action="/post" method="post">
-    <label for="title">Title</label>
-    <input type="text" name="title" id="title">
-    <label for="category">Category</label>    
-    <input type="text" name="category" id="category">
-    <label for="post">Post</label>    
-    <input type="text" name="post" id="post">
-    <button type="submit">Submit</button>
-</form>
+{% block title %}Create Post{% endblock %}
 
-{% for message in messages %}
-{{ message }}
-{% endfor %}
+{% block navbar %}
+<div class="navbar-menu">
+    <div class="navbar-menu is-active navbar-end">
+        <div class="navbar-item ">
+            <form action="/logout" method="post">
+                <button class="button is-active is-primary" type="submit">Log Out</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
 
-<button><a href="/">Return Home</a></button>
+{% block content %}
+<div class="container">
+    <h2 class="titlePage">Create Post</h2>
+    {% if messages %}
+    <div class="messages notification">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="login">
+        <form action="/post" method="post">
+            <div class="field">
+                <p class="control">
+                    <input name="title" class="input" type="text" placeholder="Title">
+                </p>
+            </div>
+            <div class="field">
+                <p class="control">
+                    <input name="category" class="input" type="text" placeholder="Category">
+                </p>
+            </div>
+            <div class="field">
+                <p class="control">
+                    <textarea name="post" class="textarea" placeholder="Post content"></textarea>
+                </p>
+            </div>
+            <div class="field">
+                <p class="control">
+                <button class="button is-success">Create Post</button>
+                </p>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

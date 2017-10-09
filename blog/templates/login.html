@@ -1,12 +1,49 @@
-<h1>LOG IN</h1>
-<form action="/login" method="post">
-    <label for="email"Email>Email</label>
-    <input type="text" name="email" id="email">
-    <label for="password">Password</label>
-    <input type="text" name="password" id="password">
-    <button type="submit">Submit</button>
-</form>
+{% extends 'base.html' %}
 
-{% for message in messages %}
-    {{ message }}
-{% endfor %}
+{% block title %}Log Out{% endblock %}
+
+{% block navbar %}
+<div class="navbar-menu is-active navbar-end">
+    <div class="navbar-item">
+        <button class="button is-active is-primary"><a class="navbarLink" href="/signup">Sign Up</a></button>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="titlePage">LOG IN</h2>
+    {% if messages %}
+    <div class="messages notification">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="login">
+        <form action="/login" method="post">
+            <div class="field">
+                <p class="control has-icons-left">
+                    <input name="email" class="input" type="email" placeholder="Email">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-envelope"></i>
+                    </span>
+                </p>
+            </div>
+            <div class="field">
+                <p class="control has-icons-left">
+                    <input name="password" class="input" type="password" placeholder="Password">
+                    <span class="icon is-small is-left">
+                        <i class="fa fa-lock"></i>
+                    </span>
+                </p>
+            </div>
+            <div class="field">
+                <p class="control">
+                <button class="button is-success">Login</button>
+                </p>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
