@@ -38,10 +38,13 @@
                     <p>Created: {{ post.created.strftime('%b %d, %Y %H:%M') }}</p>
                 </div>
                 <div>
-                    {% if likes %}
-                        <p>Likes: {{ post.likes }}</p>
-                    {% else %}
-                        <p>Likes: 0</p>                    
+                    <p>Likes: {{ likes }}</p>                   
+                    {% if loggedInUser %}
+                        <form action="/like/{{post.id}}" method="post">
+                            <span>
+                                <button type="submit"><i class="fa fa-thumbs-up fa-3x" aria-hidden="true"></i></button>
+                            </span>
+                        </form>
                     {% endif %}
                 </div>
             </div>
