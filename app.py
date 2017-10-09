@@ -190,7 +190,8 @@ class AuthorHandler(TemplateHandler):
     def get(self, slug):
         user = Users.select().where(Users.id == slug)
         if user:
-            # Retrieve users post, comment, and like history 
+            # Retrieve users post, comment, and like history
+            user = Users.select().where(Users.id == slug).get()
             posts = Posts.select().where(Posts.user_id == slug)
             if posts:
                 posts = (Posts.select().where(Posts.user_id == slug).order_by(Posts.created.desc()))
@@ -200,12 +201,14 @@ class AuthorHandler(TemplateHandler):
             likes = Likes.select().where(Likes.user_id == slug)
             if likes:
                 likes = (Likes.select().where(Likes.user_id == slug).order_by(Likes.created.desc()))
+            loggedInUser = self.current_user
             numPosts = Posts.select().where(Posts.user_id == slug).count()
             numComments = Comments.select().where(Comments.user_id == slug).count()
             numLikes = Likes.select().where(Likes.user_id == slug).count()
             return self.render_template("author.html", {'posts': posts, 'numPosts': numPosts, 
                                                         'numComments': numComments, 'numLikes': numLikes, 
-                                                        'comments': comments, 'likes': likes} )
+                                                        'comments': comments, 'likes': likes,
+                                                        'user': user, 'loggedInUser': loggedInUser})
         return self.redirect("/")
 
 class EditPostHandler(TemplateHandler):

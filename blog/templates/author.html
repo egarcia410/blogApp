@@ -25,52 +25,35 @@
 
 {% block content %}
 <div class="container">
-    <h2 class="titlePage">Author Page</h2>
+    <h2 class="titlePage">{{ user.username | upper }}</h2>
+          
     <div class="login">
-        <form action="/post-edit/{{post.id}}" method="post">
-            <div class="field">
-                <p class="control">
-                    <input name="title" class="input" type="text" value="{{post.title}}">
-                </p>
-            </div>
-            <div class="field">
-                <p class="control">
-                    <input name="category" class="input" type="text" value="{{post.category}}">
-                </p>
-            </div>
-            <div class="field">
-                <p class="control">
-                    <textarea name="post" class="textarea">{{post.post}}</textarea>
-                </p>
-            </div>
-            <div class="field">
-                <p class="control">
-                <button class="button is-success">Edit Post</button>
-                </p>
-            </div>
-        </form>
+        <div>
+            <h2>Posts Made: {{ numPosts }}</h2>
+            {% for post in posts %}
+                <li>{{ post.title }}</li>
+            {% endfor %}
+        </div>
+        
+        <hr>
+        
+        <div>
+            <h2>Comments Made: {{ numComments }}</h2>
+            {% for comment in comments %}
+                <li>{{ comment.comment }}</li>
+            {% endfor %}
+        </div>
+        
+        <hr>
+        
+        <div>
+            <h2>Posts Liked: {{ numLikes }}</h2>
+            {% for like in likes %}
+                <li>{{ like.post.title }}</li>
+            {% endfor %}
+        </div>
     </div>
 </div>
 {% endblock %}
 
 
-<h1>AUTHOR PAGE</h1>
-
-<h2>Posts Made {{ numPosts }}</h2>
-{% for post in posts %}
-    <li>{{ post.title }}</li>
-{% endfor %}
-
-<hr>
-
-<h2>Comments Made {{ numComments }}</h2>
-{% for comment in comments %}
-    <li>{{ comment.comment }}</li>
-{% endfor %}
-
-<hr>
-
-<h2>Posts Liked {{ numLikes }}</h2>
-{% for like in likes %}
-<li>{{ like.post.title }}</li>
-{% endfor %}
