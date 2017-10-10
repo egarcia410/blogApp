@@ -61,3 +61,12 @@
     margin-top: 20px;
     margin-bottom: 0 !important;
 }
+
+nav.pagination {
+    margin-top: 20px;
+}
+
+.pageButton {
+    background-color: #22D0B2;
+    color: white;
+}

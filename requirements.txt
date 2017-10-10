@@ -4,3 +4,4 @@ tornado
 jinja2
 bcrypt
 validate-email-address
+markdown2

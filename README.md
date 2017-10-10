@@ -14,9 +14,12 @@ add to postactivate file:
 
         export PYTHONPATH=INSERT_PATH_TO_PROJECT DIRECTORY
 
-add avatar - identicon
-http://identicon.net/
+Add avatar - https://jdenticon.com/
 
 Future additons:
 
-1. only update/delete if your own post
+1. pagination on home page
+
+2. search by category
+
+3. likes received from others on author page

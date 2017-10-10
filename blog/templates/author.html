@@ -29,27 +29,28 @@
           
     <div class="login">
         <div>
-            <h2>Posts Made: {{ numPosts }}</h2>
+            <h2>Posts Made: <strong>{{ numPosts }}</strong></h2>
+            <h3>Total Likes Recieved On Posts: <Strong>{{ totalLikes }}</Strong></h3>
             {% for post in posts %}
-                <li>{{ post.title }}</li>
+                <li><a href="/post/{{post.id}}">{{ post.title }}</a></li>
             {% endfor %}
         </div>
         
         <hr>
         
         <div>
-            <h2>Comments Made: {{ numComments }}</h2>
+            <h2>Comments Made: <strong>{{ numComments }}</strong></h2>
             {% for comment in comments %}
-                <li>{{ comment.comment }}</li>
+                <li><a href="/post/{{comment.post.id}}">{{ comment.comment }}</a></li>
             {% endfor %}
         </div>
         
         <hr>
         
         <div>
-            <h2>Posts Liked: {{ numLikes }}</h2>
+            <h2>Posts Liked: <strong>{{ numLikes }}</strong></h2>
             {% for like in likes %}
-                <li>{{ like.post.title }}</li>
+                <li><a href="/post/{{like.post.id}}">{{ like.post.title }}</a></li>
             {% endfor %}
         </div>
     </div>

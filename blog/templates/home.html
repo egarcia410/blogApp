@@ -59,6 +59,16 @@
         {% else %}
             <p>Be the first to make a post!</p>
         {% endif %}
+        <nav class="pagination is-large" role="navigation" aria-label="pagination">
+            <form action="/" method="post">
+                <input type="hidden" name="count" id="decrease" value="decrease">
+                <button class="pagination-previous pageButton" type="submit">Previous</button>
+            </form>
+            <form action="/" method="post">
+                <input type="hidden" name="count" id="increase" value="increase">
+                <button class="pagination-next pageButton" type="submit">Next page</button>
+            </form>
+        </nav>
     </div>
 </div>
 {% endblock %}

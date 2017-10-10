@@ -32,7 +32,7 @@
             <p class="notification">{{ post.post }}</p>
             <div>
                 <div>
-                    <p>Author: {{ post.user.username }}</p>
+                    <p>Author: <a href="/author/{{post.user.id}}">{{ post.user.username }}</a></p>
                 </div>
                 <div>
                     <p>Created: {{ post.created.strftime('%b %d, %Y %H:%M') }}</p>
@@ -78,7 +78,17 @@
                             <p>
                                 <strong><a href="/author/{{comment.user.id}}">{{ comment.user.username }}</a></strong> <small>{{ comment.created.strftime('%b %d, %Y %H:%M') }}</small>
                                 <br>
-                                {{ comment.comment }}
+                                <p>{{ comment.comment }}</p>
+                                {% if comment.user_id == loggedInUser.id %}
+                                <div class="editDeleteBox">
+                                    <form action="/comment-edit/{{comment.id}}">
+                                        <button class="editDelete button is-info" type="submit">Edit</button>
+                                    </form>
+                                    <form action="/comment-delete/{{comment.id}}" method="post">
+                                        <button class="editDelete button is-danger" type="submit">Delete</button>
+                                    </form>
+                                </div>
+                                {% endif %}
                             </p>
                         </div>
                     </div>
@@ -88,38 +98,6 @@
         {% endif %}
     </div>
 </div>
-
-
-
 {% endblock %}
-
-
-<h1>SPECIFIC POST PAGE</h1>
-
-{{ post.user.username}}
-{{ post.title }}
-{{ post.category }}
-{{ post.post }}
-{{ post.created.strftime('%B %d, %Y %H%M') }}
-{{ post.likes }}
-
-{% if loggedInUser %}
-<div>
-    {{ likes }}
-    <form action="/like/{{post.id}}" method="post">
-        <button type="submit">Like</button>
-    </form>
-</div>
-
-<hr>
-
-<form action="/comment/{{post.id}}" method="post">
-    <input type="text" name="comment" id="comment">
-    <button type="submit">Comment</button>
-    {% for message in messages %}
-    {{ message }}
-    {% endfor %}
-</form>
-{% endif %}
 
 

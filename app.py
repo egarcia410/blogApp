@@ -13,7 +13,7 @@ from jinja2 import \
 
 load_dotenv('.env')
 
-PORT = int(os.environ.get('PORT', '8000'))
+PORT = int(os.environ.get('PORT', '8080'))
 
 ENV = Environment(
     loader=PackageLoader('blog', 'templates'),
@@ -236,7 +236,6 @@ class EditPostHandler(TemplateHandler):
                 category = self.get_body_argument('category')
                 post = self.get_body_argument('post')
                 # Edit Post 
-
                 Posts.update(title=title, category=category, post=post).where(Posts.id == slug).execute()
                 return self.redirect("/post/" + slug)
         return self.redirect("/")
@@ -249,17 +248,56 @@ class DeletePostHandler(TemplateHandler):
     @tornado.web.authenticated
     def post(self, slug):
         post = Posts.select().where(Posts.id == slug)
-        print('FIRST')
         if post:
             post = Posts.select().where(Posts.id == slug).get()
             user = self.current_user
-            print('HELLO')
             # Only allow the creator of the post access to edit 
             if post.user_id == user.id:
-                print(post, 'POST')
                 post.delete_instance(recursive=True, delete_nullable=True)
-        return self.redirect("/")          
-    
+        return self.redirect("/")
+
+class EditCommentHandler(TemplateHandler):
+    @tornado.web.authenticated
+    def get(self, slug):
+        comment = Comments.select().where(Comments.id == slug)
+        if comment:
+            comment = Comments.select().where(Comments.id == slug).get()
+            user = self.current_user
+            # Only allow the creator of the comment access to edit 
+            if comment.user_id == user.id:
+                return self.render_template("edit_comment.html", {'comment': comment})
+        return self.redirect("/")
+
+    @tornado.web.authenticated
+    def post(self, slug):
+        comment = Comments.select().where(Comments.id == slug)
+        if comment:
+            comment = Comments.select().where(Comments.id == slug).get()
+            loggedInUser = self.current_user
+            # Only allow the creator of the post access to edit 
+            if comment.user_id == loggedInUser.id:
+                commentNew = self.get_body_argument('comment')
+                # Edit Comment 
+                Comments.update(comment=commentNew).where(Comments.id == slug).execute()
+                return self.redirect("/post/" + str(comment.post_id))
+        return self.redirect("/")
+
+class DeleteCommentHandler(TemplateHandler):
+    @tornado.web.authenticated
+    def get(self, slug):
+        return self.redirect("/")
+
+    @tornado.web.authenticated
+    def post(self, slug):
+        comment = Comments.select().where(Comments.id == slug)
+        if comment:
+            comment = Comments.select().where(Comments.id == slug).get()
+            user = self.current_user
+            # Only allow the creator of the post access to edit 
+            if comment.user_id == user.id:
+                comment.delete_instance(recursive=True, delete_nullable=True)
+            return self.redirect("/post/" + str(comment.post_id))
+        return self.redirect("/")     
 
 def make_app():
     return tornado.web.Application([
@@ -274,6 +312,8 @@ def make_app():
         (r"/author/(.*)", AuthorHandler),
         (r"/post-edit/(.*)", EditPostHandler),
         (r"/post-delete/(.*)", DeletePostHandler),
+        (r"/comment-edit/(.*)", EditCommentHandler),
+        (r"/comment-delete/(.*)", DeleteCommentHandler),
         (r"/static/(.*)", 
         tornado.web.StaticFileHandler, {'path': 'static'}),
     ], autoreload=True,
@@ -285,4 +325,3 @@ if __name__ == "__main__":
     app = make_app()
     app.listen(PORT, print('Creating magic on port {}'.format(PORT)))
     tornado.ioloop.IOLoop.current().start()
-
