@@ -38,20 +38,30 @@ class TemplateHandler(tornado.web.RequestHandler):
 
 class MainHandler(TemplateHandler):
     def get (self, page):
-        if page == '0' or page == None:
-            prevPage = '0'
+        if page == None or int(page) == 0:
+            prevPage = None
             nextPage = '1'
-        else:
+        elif int(page) == 1:
+            prevPage = '0'
+            nextPage = str(int(page) + 1)
+        elif int(page) > 1:
             prevPage = str(int(page) - 1)
             nextPage = str(int(page) + 1)
-        posts = Posts.select().order_by(
-            Posts.created.desc()).paginate(nextPage ,5)
         numPosts = Posts.select().count()
-        numPages = math.ceil(numposts / 5)
+        numPages = math.ceil(numPosts / 5)
+        print(type(numPages), "pages")
+        print(type(nextPage), "next")
+        print(prevPage, "Prev")
+
+        posts = Posts.select().order_by(
+            Posts.created.desc()).paginate(int(nextPage) ,5)
         if self.current_user:
             loggedInUser = self.current_user
-            return self.render_template("home.html", {'posts': posts, "prevPage": prevPage, "nextPage": nextPage, 'loggedInUser': loggedInUser})
-        return self.render_template("home.html", {'posts': posts, "prevPage": prevPage, "nextPage": nextPage})
+            return self.render_template("home.html", {'posts': posts, "numPages": str(numPages), 
+                                        "prevPage": prevPage, "nextPage": nextPage, 
+                                        'loggedInUser': loggedInUser})
+        return self.render_template("home.html", {'posts': posts, "numPages": str(numPages), 
+                                    "prevPage": prevPage, "nextPage": nextPage})
 
 class SignupHandler(TemplateHandler):
     """Sign up page to create user"""

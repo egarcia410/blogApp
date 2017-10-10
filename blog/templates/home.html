@@ -59,15 +59,22 @@
         {% else %}
             <p>Be the first to make a post!</p>
         {% endif %}
-
         <ul class="uk-pagination uk-flex-center">
-            {% if prevPage != '0' %}
-            <li><a href="/{{ prevPage }}"><span uk-pagination-previous></span></a></li>
-            {% endif %}
-            {% if nextPage >= '1' %}
-            <li><a href="/{{ nextPage }}"><span uk-pagination-next></span></a></li>
+            {% if prevPage == None %}
+                <li><a href="/{{ nextPage }}"><span uk-pagination-next></span></a></li>
+            {% elif prevPage == '0' %}
+                <li><a href="/"><span uk-pagination-previous></span></a></li>
+                {% if nextPage != numPages%}
+                    <li><a href="/{{ nextPage }}"><span uk-pagination-next></span></a></li>
+                {% endif %}
+            {% elif prevPage != '0' and nextPage != numPages %}
+                <li><a href="/{{ prevPage }}"><span uk-pagination-previous></span></a></li>
+                <li><a href="/{{ nextPage }}"><span uk-pagination-next></span></a></li>
+            {% elif prevPage != '0' and nextPage == numPages %}
+                <li><a href="/{{ prevPage }}"><span uk-pagination-previous></span></a></li>
             {% endif %}
         </ul>
+
     </div>
 </div>
 {% endblock %}
