@@ -49,19 +49,27 @@ class MainHandler(TemplateHandler):
             nextPage = str(int(page) + 1)
         numPosts = Posts.select().count()
         numPages = math.ceil(numPosts / 5)
-        print(type(numPages), "pages")
-        print(type(nextPage), "next")
-        print(prevPage, "Prev")
-
+        categories = Posts.select(Posts.category).distinct()
         posts = Posts.select().order_by(
             Posts.created.desc()).paginate(int(nextPage) ,5)
         if self.current_user:
             loggedInUser = self.current_user
-            return self.render_template("home.html", {'posts': posts, "numPages": str(numPages), 
+            return self.render_template("home.html", {'posts': posts, "categories": categories, "numPages": str(numPages), 
                                         "prevPage": prevPage, "nextPage": nextPage, 
                                         'loggedInUser': loggedInUser})
-        return self.render_template("home.html", {'posts': posts, "numPages": str(numPages), 
+        return self.render_template("home.html", {'posts': posts, "categories": categories, "numPages": str(numPages), 
                                     "prevPage": prevPage, "nextPage": nextPage})
+
+class SearchHandler(TemplateHandler):
+    def get (self, slug):
+        category = Posts.select().where(Posts.category == slug).get()
+        posts = Posts.select().where(Posts.category == slug).order_by(
+            Posts.created.desc())
+        if self.current_user:
+            loggedInUser = self.current_user
+            return self.render_template("home.html", {'posts': posts, "categories": categories, 
+                                        'loggedInUser': loggedInUser})
+        return self.render_template("home.html", {'posts': posts, "categories": categories})
 
 class SignupHandler(TemplateHandler):
     """Sign up page to create user"""
@@ -323,6 +331,7 @@ class DeleteCommentHandler(TemplateHandler):
 def make_app():
     return tornado.web.Application([
         (r"/(\d+)?", MainHandler),
+        (r"/search/(.*)", SearchHandler),
         (r"/signup", SignupHandler),
         (r"/login", LoginHandler),
         (r"/logout", LogoutHandler),

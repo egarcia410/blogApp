@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Search{% endblock %}
 
 {% block navbar %}
     {% if loggedInUser %}
@@ -31,11 +31,6 @@
 
 {% block content %}
 <di class="container">
-    <div class="messages">
-        {% for message in messages %}
-            {{ message }}
-        {% endfor %}
-    </div>
     <div class="posts">
         {% if categories %}
             <button class="uk-button uk-button-default" type="button">Search By Category</button>
@@ -66,27 +61,7 @@
                 {% endif %}
             </ul>
             {% endfor %}
-        {% else %}
-            <p>Be the first to make a post!</p>
         {% endif %}
-        <ul class="uk-pagination uk-flex-center">
-            {% if numPages != '1' %}
-                {% if prevPage == None %}
-                    <li><a class="pagination" href="/{{ nextPage }}"><span uk-pagination-next></span></a></li>
-                {% elif prevPage == '0' %}
-                    <li><a class="pagination" href="/"><span uk-pagination-previous></span></a></li>
-                    {% if nextPage != numPages %}
-                        <li><a class="pagination" href="/{{ nextPage }}"><span uk-pagination-next></span></a></li>
-                    {% endif %}
-                {% elif prevPage != '0' and nextPage != numPages %}
-                    <li><a class="pagination" href="/{{ prevPage }}"><span uk-pagination-previous></span></a></li>
-                    <li><a class="pagination" href="/{{ nextPage }}"><span uk-pagination-next></span></a></li>
-                {% elif prevPage != '0' and nextPage == numPages %}
-                    <li><a class="pagination" href="/{{ prevPage }}"><span uk-pagination-previous></span></a></li>
-                {% endif %}
-            {% endif %}
-        </ul>
-
     </div>
 </div>
 {% endblock %}

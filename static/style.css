@@ -76,3 +76,7 @@ nav.pagination {
     border: none;
     color: green;
 }
+
+.pagination {
+    margin-top: 50px;
+}
