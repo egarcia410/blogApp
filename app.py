@@ -4,6 +4,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.log
 import tornado.escape
+import math
 
 from dotenv import load_dotenv
 from models import Posts, Users, Comments, Likes
@@ -13,7 +14,7 @@ from jinja2 import \
 
 load_dotenv('.env')
 
-PORT = int(os.environ.get('PORT', '8080'))
+PORT = int(os.environ.get('PORT', '8000'))
 
 ENV = Environment(
     loader=PackageLoader('blog', 'templates'),
@@ -36,13 +37,21 @@ class TemplateHandler(tornado.web.RequestHandler):
         return Users.select().where(Users.id == int(user_id)).get()
 
 class MainHandler(TemplateHandler):
-    def get (self):
+    def get (self, page):
+        if page == '0' or page == None:
+            prevPage = '0'
+            nextPage = '1'
+        else:
+            prevPage = str(int(page) - 1)
+            nextPage = str(int(page) + 1)
         posts = Posts.select().order_by(
-            Posts.created.desc())
+            Posts.created.desc()).paginate(nextPage ,5)
+        numPosts = Posts.select().count()
+        numPages = math.ceil(numposts / 5)
         if self.current_user:
             loggedInUser = self.current_user
-            return self.render_template("home.html", {'posts': posts, 'loggedInUser': loggedInUser})
-        return self.render_template("home.html", {'posts': posts})
+            return self.render_template("home.html", {'posts': posts, "prevPage": prevPage, "nextPage": nextPage, 'loggedInUser': loggedInUser})
+        return self.render_template("home.html", {'posts': posts, "prevPage": prevPage, "nextPage": nextPage})
 
 class SignupHandler(TemplateHandler):
     """Sign up page to create user"""
@@ -205,10 +214,12 @@ class AuthorHandler(TemplateHandler):
             numPosts = Posts.select().where(Posts.user_id == slug).count()
             numComments = Comments.select().where(Comments.user_id == slug).count()
             numLikes = Likes.select().where(Likes.user_id == slug).count()
+            totalLikes = Likes.select(Likes.post_id).join(Posts).join(Users).where(Posts.user_id == slug).count()
             return self.render_template("author.html", {'posts': posts, 'numPosts': numPosts, 
                                                         'numComments': numComments, 'numLikes': numLikes, 
                                                         'comments': comments, 'likes': likes,
-                                                        'user': user, 'loggedInUser': loggedInUser})
+                                                        'user': user, 'totalLikes': totalLikes,
+                                                        'loggedInUser': loggedInUser})
         return self.redirect("/")
 
 class EditPostHandler(TemplateHandler):
@@ -301,7 +312,7 @@ class DeleteCommentHandler(TemplateHandler):
 
 def make_app():
     return tornado.web.Application([
-        (r"/", MainHandler),
+        (r"/(\d+)?", MainHandler),
         (r"/signup", SignupHandler),
         (r"/login", LoginHandler),
         (r"/logout", LogoutHandler),

@@ -42,7 +42,7 @@
                     {% if loggedInUser %}
                         <form action="/like/{{post.id}}" method="post">
                             <span>
-                                <button type="submit"><i class="fa fa-thumbs-up fa-3x" aria-hidden="true"></i></button>
+                                <button class="likesButton" type="submit"><i class="fa fa-thumbs-up fa-3x" aria-hidden="true"></i></button>
                             </span>
                         </form>
                     {% endif %}

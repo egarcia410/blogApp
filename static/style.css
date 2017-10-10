@@ -70,3 +70,9 @@ nav.pagination {
     background-color: #22D0B2;
     color: white;
 }
+
+.likesButton {
+    background-color: white;
+    border: none;
+    color: green;
+}

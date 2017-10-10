@@ -21,5 +21,3 @@ Future additons:
 1. pagination on home page
 
 2. search by category
-
-3. likes received from others on author page

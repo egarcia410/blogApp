@@ -59,16 +59,15 @@
         {% else %}
             <p>Be the first to make a post!</p>
         {% endif %}
-        <nav class="pagination is-large" role="navigation" aria-label="pagination">
-            <form action="/" method="post">
-                <input type="hidden" name="count" id="decrease" value="decrease">
-                <button class="pagination-previous pageButton" type="submit">Previous</button>
-            </form>
-            <form action="/" method="post">
-                <input type="hidden" name="count" id="increase" value="increase">
-                <button class="pagination-next pageButton" type="submit">Next page</button>
-            </form>
-        </nav>
+
+        <ul class="uk-pagination uk-flex-center">
+            {% if prevPage != '0' %}
+            <li><a href="/{{ prevPage }}"><span uk-pagination-previous></span></a></li>
+            {% endif %}
+            {% if nextPage >= '1' %}
+            <li><a href="/{{ nextPage }}"><span uk-pagination-next></span></a></li>
+            {% endif %}
+        </ul>
     </div>
 </div>
 {% endblock %}
