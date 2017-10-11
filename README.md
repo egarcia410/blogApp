@@ -32,7 +32,7 @@ Project that implements full CRUD operation using PostgreSQL, Peewee, and Tornad
 ```
 SECRET=INSERT_SECRET_PHRASE_HERE
 ```
-    **This phrase can be any length of numbers and letters**
+**This phrase can be any length of numbers and letters**
 
 9. Run Program:
 
