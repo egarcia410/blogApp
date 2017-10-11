@@ -29,9 +29,10 @@ Project that implements full CRUD operation using PostgreSQL, Peewee, and Tornad
 
 8. Insert secret into `.env` file:
 
-```
-SECRET=INSERT_SECRET_PHRASE_HERE
-```
+        ```
+        SECRET=INSERT_SECRET_PHRASE_HERE
+        ```
+
 **This phrase can be any length of numbers and letters**
 
 9. Run Program:
