@@ -36,9 +36,10 @@
             {{ message }}
         {% endfor %}
     </div>
+    <h2 class="titlePage">Posts</h2>            
     <div class="posts">
         {% if categories %}
-            <button class="uk-button uk-button-default" type="button">Search By Category</button>
+            <button class="searchButton uk-button uk-button-default" type="button">Search By Category</button>
             <div uk-dropdown>
                 <ul class="uk-nav uk-dropdown-nav">
                     {% for category in categories %}
@@ -50,7 +51,7 @@
         {% if posts %}
             {% for post in posts %}
             <ul>
-                <li><a class="postTitle" href="/post/{{post.id}}">{{ post.title }}</a></li>
+                <li><a class="postTitle" href="/post/{{post.id}}">{{ post.title | upper }}</a></li>
                 <p>By <a class="postUsername" href="/author/{{ post.user.id }}">{{ post.user.username }}</a></p>
                 {% if loggedInUser %}
                     {% if post.user_id == loggedInUser.id %}

@@ -80,3 +80,7 @@ nav.pagination {
 .pagination {
     margin-top: 50px;
 }
+
+.searchButton {
+    margin: 20px;
+}

@@ -62,14 +62,13 @@ class MainHandler(TemplateHandler):
 
 class SearchHandler(TemplateHandler):
     def get (self, slug):
-        category = Posts.select().where(Posts.category == slug).get()
+        categories = Posts.select(Posts.category).distinct()
         posts = Posts.select().where(Posts.category == slug).order_by(
             Posts.created.desc())
         if self.current_user:
             loggedInUser = self.current_user
-            return self.render_template("home.html", {'posts': posts, "categories": categories, 
-                                        'loggedInUser': loggedInUser})
-        return self.render_template("home.html", {'posts': posts, "categories": categories})
+            return self.render_template("search.html", {'posts': posts, "categories": categories, "category": slug, 'loggedInUser': loggedInUser})
+        return self.render_template("search.html", { 'posts': posts, "categories": categories, "category": slug, })
 
 class SignupHandler(TemplateHandler):
     """Sign up page to create user"""
