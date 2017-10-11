@@ -1,23 +1,39 @@
-export PYTHONPATH=`pwd` # sets up path to current directory
+# Blog App
 
-echo $PYTHONPATH # Displays path
+Project that implements full CRUD operation using PostgreSQL, Peewee, and Tornado
 
-models.migrations/0001.py # Creates databse in PosgreSQL
+## Getting Started
+1. Install [Python3](https://www.python.org/downloads/)
 
+2. Clone Repository:
 
-echo $VIRTUAL_ENV
-    Copy path output
+        $ git clone https://github.com/egarcia410/blogApp.git
 
-add to copied path /bin/postactivate <-- nano this path to edit
+3. Change Directory:
 
-add to postactivate file:
+        $ cd blogApp
 
-        export PYTHONPATH=INSERT_PATH_TO_PROJECT DIRECTORY
+4. Install [VirtualWrapper](https://virtualenvwrapper.readthedocs.io/en/latest/install.html)
 
-Add avatar - https://jdenticon.com/
+5. Create and Activate Virtualenv:
 
-Future additons:
+        $ mkvirtualenv -a `pwd` -p `which python3` INSERT_VIRTUALENV_NAME
+    
+6. Install Dependencies:
 
-1. pagination on home page
+        $ pip install -r requirements.txt
 
-2. search by category
+7. Create an `.env` file:
+
+        $ touch .env
+
+8. Insert secret into `.env` file:
+
+```
+SECRET=INSERT_SECRET_PHRASE_HERE
+```
+    **This phrase can be any length of numbers and letters**
+
+9. Run Program:
+
+        $ python app.py
